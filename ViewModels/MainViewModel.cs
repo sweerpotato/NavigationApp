@@ -45,8 +45,20 @@ namespace NavigationApp.ViewModels
             : base()
         {
             _ = Navigator.OpenFirstPage();
+            Navigator.NavigationFinished += OnNavigationFinished;
         }
 
         #endregion
+
+        private void OnNavigationFinished(object sender, NavigationFinishedEventArgs e)
+        {
+            if (e.PageResult is SelectIntegerPageResult integerPageResult)
+            {
+                MessageBox.Show($"Result: {integerPageResult.SelectedInteger}",
+                    "Navigation finished",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+            }
+        }
     }
 }

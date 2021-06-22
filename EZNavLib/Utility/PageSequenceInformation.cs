@@ -24,11 +24,6 @@ namespace EZNavLib
         /// </summary>
         private int _CurrentPageIndex = 0;
 
-        /// <summary>
-        /// Boolean value indicating if this is a sequence greater than one
-        /// </summary>
-        public bool IsSequence => PageSequenceTypes.Count > 1;
-
         #endregion
 
         #region Constructors

@@ -4,7 +4,7 @@ using EZNavLib.Interfaces;
 
 namespace NavigationApp.ViewModels
 {
-    public class SelectIntegerViewModel : ViewModelBase, INavigatablePage, ICanNavigateNext, ICanNavigatePrevious
+    public class SelectIntegerViewModel : ViewModelBase, INavigatablePage, ICanFinishNavigation, ICanNavigatePrevious
     {
         private string _IntegerTextBoxText = "0";
 
@@ -45,7 +45,7 @@ namespace NavigationApp.ViewModels
 
         public void ExecuteNextCommand()
         {
-            NavigateNext(this, new PageNavigatedEventArgs());
+            FinishNavigation(this, EventArgs.Empty);
         }
 
         public INavigatablePageResult GetPageResult()
@@ -58,10 +58,10 @@ namespace NavigationApp.ViewModels
             //TODO: Do something here
         }
 
-        public event EventHandler<PageNavigatedEventArgs> NavigateNext = delegate { };
-
         public event EventHandler NavigatePrevious = delegate { };
 
         public event EventHandler CancelNavigation = delegate { };
+
+        public event EventHandler FinishNavigation = delegate { };
     }
 }

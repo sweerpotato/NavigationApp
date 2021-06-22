@@ -5,6 +5,8 @@ namespace EZNavLib
 {
     public class PageNavigatedEventArgs : EventArgs
     {
+        #region Properties and Fields
+
         /// <summary>
         /// The type of pages to display, in sequence
         /// </summary>
@@ -12,7 +14,11 @@ namespace EZNavLib
         {
             get;
             private set;
-        }
+        } = null;
+
+        #endregion
+
+        #region Constructors
 
         /// <summary>
         /// Creates a new instance of this class
@@ -32,5 +38,7 @@ namespace EZNavLib
             
             PageTypes = pageTypes;
         }
+
+        #endregion
     }
 }

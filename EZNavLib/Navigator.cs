@@ -93,6 +93,11 @@ namespace EZNavLib
             {
                 canNavigatePrevious.NavigatePrevious -= OnNavigatePrevious;
             }
+
+            if (navigatablePage is ICanFinishNavigation canFinishNavigation)
+            {
+                canFinishNavigation.FinishNavigation -= OnFinishNavigation;
+            }
         }
 
         /// <summary>
@@ -111,6 +116,11 @@ namespace EZNavLib
             {
                 canNavigatePrevious.NavigatePrevious += OnNavigatePrevious;
             }
+
+            if (navigatablePage is ICanFinishNavigation canFinishNavigation)
+            {
+                canFinishNavigation.FinishNavigation += OnFinishNavigation;
+            }
         }
 
         /// <summary>
@@ -119,6 +129,11 @@ namespace EZNavLib
         /// <returns>The next <see cref="INavigatablePage"/> in the sequence</returns>
         private INavigatablePage GetNextPage()
         {
+            if (_CurrentPageSequenceInformation == null)
+            {
+                return CurrentPage;
+            }
+
             Type nextPageType = _CurrentPageSequenceInformation.GetNextPageType();
 
             RemoveEventHandlers(CurrentPage);
@@ -134,15 +149,23 @@ namespace EZNavLib
                 return _FirstPage;
             }
 
-            //TODO: Error handling would make sense here
-            INavigatablePageResult previousPageResult = CurrentPage.GetPageResult();
-            INavigatablePage nextPage = (INavigatablePage)Activator.CreateInstance(nextPageType);
+            INavigatablePage nextPage;
 
-            nextPage.Initialize(previousPageResult);
+            try
+            {
+                INavigatablePageResult previousPageResult = CurrentPage.GetPageResult();
+                nextPage = (INavigatablePage)Activator.CreateInstance(nextPageType);
+
+                nextPage.Initialize(previousPageResult);
+
+                _NavigationHistory.Push(CurrentPage);
+            }
+            catch
+            {
+                nextPage = CurrentPage;
+            }
 
             AddEventHandlers(nextPage);
-
-            _NavigationHistory.Push(CurrentPage);
 
             return nextPage;
         }
@@ -173,6 +196,10 @@ namespace EZNavLib
             return previousPage;
         }
 
+        /// <summary>
+        /// Cancels the navigation and returns to the first page
+        /// </summary>
+        /// <returns>The first <see cref="INavigatablePage"/> in the navigation sequence</returns>
         private INavigatablePage CancelNavigation()
         {
             _NavigationHistory.Clear();
@@ -194,9 +221,8 @@ namespace EZNavLib
         /// <param name="e"><see cref="EventArgs"/> describing the sequence of, or the next page.</param>
         private void OnNavigateNext(object sender, PageNavigatedEventArgs e)
         {
-            //TODO: Some sort of error handling here for when we run out of pages
-            if (_CurrentPageSequenceInformation == null ||
-                !_CurrentPageSequenceInformation.IsSequence)
+            if (e.PageTypes != null &&
+                e.PageTypes.Length > 0)
             {
                 _CurrentPageSequenceInformation = new PageSequenceInformation(e.PageTypes);
             }
@@ -219,6 +245,36 @@ namespace EZNavLib
         {
             CurrentPage = CancelNavigation();
         }
+
+        /// <summary>
+        /// Event handler for the <see cref="ICanFinishNavigation.FinishNavigation"/> event
+        /// </summary>
+        private void OnFinishNavigation(object sender, EventArgs e)
+        {
+            //TODO: Consider if the first page should be displayed here or not
+            INavigatablePageResult lastPageResult;
+
+            try
+            {
+                lastPageResult = CurrentPage.GetPageResult();
+            }
+            catch
+            {
+                //TODO: Consider if an ExceptionPageResult should be implemented or not
+                lastPageResult = new EmptyPageResult();
+            }
+
+            NavigationFinished(this, new NavigationFinishedEventArgs(lastPageResult));
+        }
+
+        #endregion
+
+        #region Events
+
+        /// <summary>
+        /// Event raised when the navigation has been completed and the final page result has been generated
+        /// </summary>
+        public event EventHandler<NavigationFinishedEventArgs> NavigationFinished = delegate { };
 
         #endregion
     }
