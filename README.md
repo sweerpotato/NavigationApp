@@ -27,7 +27,7 @@ Implementing this interface requires the implementing object to implement the fo
 #### INavigatablePage SourcePage
 This property should return a reference to the page which yielded the `INavigatablePageResult` in most implementations.
 #### Pre-defined page results
-There are two pre-defined classes in the library implementing `INavigatablePageResult`; EmptyPageResult and DefaultPageResult.
+There are two pre-defined classes in the library implementing `INavigatablePageResult`: `EmptyPageResult` and `DefaultPageResult`.
 ##### EmptyPageResult
 Defines an empty page result. The `SourcePage` property returns null.
 ##### DefaultPageResult
