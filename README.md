@@ -36,4 +36,4 @@ Defines an abstract, default and basic implementation of a page result. It provi
 ### ICanNavigate(Next|Previous)
 These interfaces describe objects able to navigate to the previous page or the next page by the `Navigator` object when the corresponding event is raised.
 The navigation sequence is defined by the `PageNavigatedEventArgs` provided to the `NavigateNext` event when it is raised. The sequence is dynamic, and can change depending on the `Type`s provided to the `PageNavigatedEventArgs`.
-The types provided need to implement the `INavigatablePage` interface - an `ArgumentException` will be raised by the `PageNavigatedEventArgs`' constructor if they don't.
+The types provided need to implement the `INavigatablePage` interface - an `ArgumentException` will be thrown by the `PageNavigatedEventArgs`' constructor if they don't.
